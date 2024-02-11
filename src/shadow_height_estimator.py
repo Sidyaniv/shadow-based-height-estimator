@@ -1,7 +1,7 @@
 import math
 import numpy as np
 from scipy.ndimage import rotate
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Tuple, Optional
 from src.utils_for_estimate import (
     estimate_direction,
     estimate_shadow_points,
@@ -10,11 +10,11 @@ from src.utils_for_estimate import (
 
 
 def estimate_single_building_height(
-    shadow_mask,
-    sun_azimuth_angle,
-    scale,
-    sun_elevation_angle,
-):
+    shadow_mask: np.ndarray,
+    sun_azimuth_angle: float,
+    scale: float,
+    sun_elevation_angle: float,
+) -> float:
     """Estimate single building height
 
     Args:
@@ -38,12 +38,12 @@ def estimate_single_building_height(
     return math.tan(math.radians(sun_elevation_angle)) * shadow_length_meters
 
 
-def rotate_masks(masks, angle):
+def rotate_masks(masks: np.ndarray, angle: float) -> np.ndarray:
     """rotate masks in list on angle
 
     Args:
         masks (np.ndarray): binary masks
-        angle (int): sun_azimuth_angle - 180
+        angle (float): sun_azimuth_angle - 180
 
     Returns:
         np.ndarray: rotatedlist
@@ -61,7 +61,7 @@ def rotate_masks(masks, angle):
     return rotated_list
 
 
-def take_indices_shadows(masks):
+def take_indices_shadows(masks: np.ndarray) -> Dict[int, Tuple[int, int]]:
     """take down indices of shadows
 
     Args:
@@ -80,7 +80,12 @@ def take_indices_shadows(masks):
     return indices_shadows
 
 
-def estimate_building_heights(masks, sun_azimuth_angle, scale, sun_elevation_angle):
+def estimate_building_heights(
+    masks: np.ndarray,
+    sun_azimuth_angle: float,
+    scale: float,
+    sun_elevation_angle: float,
+) -> Dict[int, float]:
     """summary func estimate building height for binary masks
 
     Args:
@@ -106,7 +111,12 @@ def estimate_building_heights(masks, sun_azimuth_angle, scale, sun_elevation_ang
     return building_heights
 
 
-def attach_heights(rotated_masks, estimated_heights, indices_shadows, threshold):
+def attach_heights(  # noqa: WPS234
+    rotated_masks: np.ndarray,
+    estimated_heights: Dict[int, float],
+    indices_shadows: Dict[int, Tuple[int, int]],
+    threshold: int,
+) -> Dict[int, Union[List[float], List[int]]]:
     """attach heights from shadows to building
 
     Args:
@@ -136,13 +146,13 @@ def attach_heights(rotated_masks, estimated_heights, indices_shadows, threshold)
     return {'building_heights': building_heights, 'building_shadow': building_shadows}
 
 
-def estimate_rotate_angle(sun_azimuth_angle):
-    pi = 180
+def estimate_rotate_angle(sun_azimuth_angle: float) -> float:
+    pi = 180.0
     return sun_azimuth_angle - pi
 
 
-def buildings_info(
-    hyperparameters,
+def buildings_info(  # noqa: WPS234
+    hyperparameters: Dict[str, Optional[Union[np.ndarray, float, int, float, int]]],  # noqa: WPS221
 ) -> Dict[int, Union[np.ndarray, List[float]]]:
     """
     Creates a dictionary where the key is the number `int` of the building's binary
@@ -155,7 +165,6 @@ def buildings_info(
     for searching for the building closest to the shadow for marking. Heights are calculated
     from shadow masks and matched to buildings using a threshold.
     It is important to choose the right threshold for calculating building heights.
-
 
     Args:
         Dict[
