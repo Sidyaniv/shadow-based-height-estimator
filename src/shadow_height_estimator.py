@@ -65,7 +65,7 @@ def rotate_points(points: Dict[int, List[Tuple[float]]],
 
 
 def rotate_angle(sun_azimuth_angle: float) -> float:
-    return 360.0 - (sun_azimuth_angle + 90)
+    return sun_azimuth_angle + 90
 
 
 def attach_heights(
@@ -169,3 +169,57 @@ def buildings_info(
         }
 
     return result_dict
+
+# from utils_for_estimate import (get_points,
+#                                     get_image_center,
+#                                     find_heights_and_shadows,
+#                                     extreme_points,
+#                                     extra_rotate_angle,
+#                                     find_horizontal_area,
+#                                     )
+# from annotations.annotation import anns_and_images
+# import numpy as np
+
+# dataset_dir = '../3d_tools_dataset/'
+# annot_file = dataset_dir + 'annotations/instances_default.json'
+# images_directory = dataset_dir + 'image_png/'
+# image_directory = dataset_dir + 'image_png/test_1.png'
+
+# SCALE = np.float16(0.1)
+# SUN_AZIMUTH_ANGLE = np.uint8(100)
+# SUN_ELEVATION_ANGLE = np.uint8(30)
+# ROTATE_ANGLE = SUN_AZIMUTH_ANGLE + 90.0
+# THRESHOLD = np.uint8(5)
+# BROWN = (np.uint8(128), np.uint8(64), np.uint8(48))
+# BLUE = (np.uint8(0), np.uint8(0), np.uint8(255))
+# COLORS = np.array([BROWN, BLUE])
+
+# image, anns = anns_and_images(coco_annotation_file=annot_file, images_directory=images_directory)
+
+# shadows_points = get_points(anns)[0]
+# building_points = get_points(anns)[1]
+
+# center = get_image_center(image_path=image_directory)
+# rotated_points_of_shadows = rotate_points(points=shadows_points, center=center, rotate_angle=ROTATE_ANGLE)
+# rotated_points_of_buildings = rotate_points(points=building_points, center=center, rotate_angle=ROTATE_ANGLE)
+
+# extra_angles = {}
+# list_of_areas = []
+# for iteration, points_of_shadow in rotated_points_of_shadows.items():
+#     area = find_horizontal_area(points_of_shadow, THRESHOLD)
+#     extr_poi = extreme_points(points_of_shadow, area)
+#     extra_angles[iteration] = extra_rotate_angle(extr_poi)
+    
+# shadows_heigth = estimate_buildings_height(rotated_points_of_shadows, SCALE, SUN_ELEVATION_ANGLE)
+
+# find = find_heights_and_shadows(rotated_points_of_shadows,
+#                                 rotated_points_of_buildings,
+#                                 shadows_heigth,
+#                                 THRESHOLD
+#                                 )
+
+# attach = attach_heights(shadows_heigth, find)
+
+
+# print(extra_angles)
+# print(shadows_heigth)
